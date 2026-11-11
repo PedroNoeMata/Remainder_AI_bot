@@ -192,35 +192,3 @@ function resumenVentasPorMes1() {
 
   Logger.log("✔ Proceso terminado");
 }
-
-// function enviarRecordatorioTelegram() {
-//     var token = "7947319144:AAE_RsZXslz5e8Z32DrZAJvdKPmTFJfa4FQ";  // Reemplaza con el token de tu bot de Telegram
-//     var chat_id = "1318922238";   // Reemplaza con tu chat ID
-    
-//     var calendarId = "primary";  // Usa "primary" para el calendario principal
-//     var eventos = CalendarApp.getCalendarById(calendarId).getEventsForDay(new Date());
-    
-//     var mensaje = "📅 *Eventos de hoy:*\n";
-//     if (eventos.length === 0) {
-//         mensaje += "No tienes eventos programados.";
-//     } else {
-//         eventos.forEach(function(evento) {
-//             var titulo = evento.getTitle();
-//             var horaInicio = Utilities.formatDate(evento.getStartTime(), Session.getScriptTimeZone(), "HH:mm");
-//             mensaje += `🔹 *${titulo}* - ⏰ ${horaInicio}\n`;
-//         });
-//     }
-    
-//     var url = "https://api.telegram.org/bot" + token + "/sendMessage";
-//     var opciones = {
-//         method: "post",
-//         payload: {
-//             chat_id: chat_id,
-//             text: mensaje,
-//             parse_mode: "Markdown"
-//         }
-//     };
-    
-//     UrlFetchApp.fetch(url, opciones);
-// }
-
