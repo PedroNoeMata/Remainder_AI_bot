@@ -1,40 +1,39 @@
-# Despliegue de Google Apps Script con GitHub Actions
+# Despliegue automático de Google Apps Script con GitHub Actions
 
-El workflow `.github/workflows/deploy-apps-script.yml` permite enviar el código de la rama `fix/seguridad-telegram` a Google Apps Script mediante `clasp push`.
+El workflow `.github/workflows/deploy-apps-script.yml` publica automáticamente el código de la rama `fix/seguridad-telegram` en Google Apps Script mediante `clasp push --force`.
 
-## 1. Crear el secreto de autenticación
+## 1. Autenticación (configuración única)
 
-1. En tu equipo, ejecuta `clasp login` si todavía no tienes una sesión válida.
-2. Abre el archivo local `~/.clasprc.json` (en Windows suele estar en `%USERPROFILE%\.clasprc.json`).
-3. Copia el contenido completo del archivo, sin modificarlo.
-4. En GitHub abre **Settings → Secrets and variables → Actions → New repository secret**.
-5. Crea el secreto con este nombre exacto: `CLASPRC_JSON`.
-6. Pega como valor el contenido completo de `.clasprc.json` y guarda.
+El repositorio debe tener el secreto `CLASPRC_JSON`:
 
-No subas `.clasprc.json` al repositorio, no lo agregues a un commit y no lo compartas en mensajes. Es una credencial OAuth.
+1. En tu equipo, abre `%USERPROFILE%\\.clasprc.json` (Windows) o `~/.clasprc.json`.
+2. Copia el contenido completo del archivo sin modificarlo.
+3. En GitHub abre **Settings → Secrets and variables → Actions**.
+4. Verifica que exista el secreto de repositorio `CLASPRC_JSON` con ese contenido.
 
-## 2. Ejecutar el despliegue manual
+No subas `.clasprc.json` al repositorio ni compartas su contenido. Es una credencial OAuth.
 
-1. Abre la pestaña **Actions** del repositorio.
-2. Selecciona **Deploy Google Apps Script with clasp**.
-3. Pulsa **Run workflow**.
-4. Selecciona la rama `fix/seguridad-telegram`.
-5. Para confirmar el envío, cambia `confirm_deploy` a `yes`.
-6. Ejecuta el workflow y revisa el resultado de cada paso.
+## 2. Despliegue automático
 
-El workflow está restringido a la rama `fix/seguridad-telegram`; no despliega desde `main` ni desde la rama de respaldo. No se ejecuta automáticamente al hacer push o al abrir el PR.
+A partir de esta configuración:
 
-## 3. Qué hace y qué no hace
+1. Realiza tus cambios de código en la rama `fix/seguridad-telegram`.
+2. Guarda los cambios y haz `git push` a GitHub.
+3. GitHub Actions iniciará el workflow automáticamente.
+4. El workflow valida `appsscript.json`, configura clasp, ejecuta `clasp status` y después `clasp push --force`.
+5. Revisa **Actions → Deploy Google Apps Script with clasp** para confirmar que el trabajo terminó correctamente.
 
-- Valida que `appsscript.json` sea JSON válido.
-- Instala Node.js y `@google/clasp`.
-- Configura la autenticación usando el secreto `CLASPRC_JSON`.
-- Ejecuta `clasp status` y después `clasp push --force`.
-- No crea una nueva versión numerada ni una implementación web. Solo sincroniza los archivos fuente con el proyecto de Apps Script asociado a `.clasp.json`.
-- Las Script Properties del proyecto (por ejemplo, `TELEGRAM_TOKEN` y `TELEGRAM_CHAT_ID`) no se guardan en Git y no se reemplazan con este push.
+No necesitas pulsar **Run workflow** para los cambios nuevos. El disparador automático se aplica a cada push a `fix/seguridad-telegram`. El disparador manual se conserva como alternativa y requiere seleccionar `yes`.
 
-## 4. Protección del proyecto
+## 3. Alcance y protección
 
-Antes de ejecutar el workflow, verifica que el `scriptId` de `.clasp.json` corresponda al proyecto de Apps Script que quieres actualizar. El paso `clasp status` muestra los archivos que se sincronizarán. El push sobrescribe los archivos remotos correspondientes a los archivos locales incluidos por clasp.
+- Solo se despliega desde `fix/seguridad-telegram`; los pushes a `main` y a `backup/original-2026-11-11` no publican en Apps Script.
+- Cada push sincroniza los archivos locales con el proyecto asociado al `.clasp.json` de esa rama.
+- `clasp push --force` puede sobrescribir los archivos remotos correspondientes. Verifica el Script ID antes de cambiar `.clasp.json`.
+- La rama `backup/original-2026-11-11` conserva el código original.
+- Las Script Properties, como `TELEGRAM_TOKEN` y `TELEGRAM_CHAT_ID`, no se guardan en Git y este push no las reemplaza.
+- El workflow no crea una versión numerada ni actualiza una implementación de Web App; solo sincroniza el código fuente.
 
-La rama `backup/original-2026-11-11` conserva la copia original del código y `main` no se modifica con este workflow.
+## 4. Flujo recomendado
+
+Trabaja y prueba los cambios en `fix/seguridad-telegram`. Después de cada `git push`, espera a que el workflow termine en verde antes de dar por publicado el cambio. Si el workflow falla, revisa el log de Actions: no asumas que Apps Script recibió la actualización.
