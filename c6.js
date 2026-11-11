@@ -32,7 +32,7 @@ function enviarRecordatorioTelegramx() {
     `;
 
     // Envío
-    enviarTelegramHTML(mensaje, String(chatId));
+    enviarTelegramHTMLConBoton_(mensaje, String(chatId));
   });
 }
 
@@ -92,7 +92,7 @@ function tablaTextoCanal() {
   return txt;
 }
 
-function tablaTextoMes2() {
+function tablaTextoMes2_C6_legacy() {
   const ss =  SpreadsheetApp.openById("1BpcNCdqEsmkp0Sc96MLwXGUH_GbSU2l5bRZtXZqPXfQ");
   const hoja = ss.getSheetByName("ResumenMes");
   const datos = hoja.getDataRange().getValues();
@@ -338,7 +338,7 @@ function resumenVentasPorMes(agenteFiltro) {
   Logger.log(`✔ Resumen mensual generado para ${agenteFiltro}`);
 }
 
-function enviarTelegramHTML(mensaje, chatId) {
+function enviarTelegramHTMLConBoton_(mensaje, chatId) {
   const url = `https://api.telegram.org/bot${obtenerTokenTelegram_()}/sendMessage`;
 
   const payload = {
@@ -445,7 +445,7 @@ function actualizarResumenMesActual() {
   rango.removeDuplicates([1]);
 }
 
-function tablaTextoCanal1() {
+function tablaTextoCanal1_C6() {
   const ss = SpreadsheetApp.openByUrl(URL_SHEET);
   const hoja = ss.getSheetByName(HOJA_CANAL);
   const datos = hoja.getDataRange().getValues();
@@ -487,7 +487,7 @@ function formatoCifra(num) {
   return num.toString();
 }
 
-function tablaTextoMes1() {
+function tablaTextoMes1_C6() {
   const ss = SpreadsheetApp.openById("1BpcNCdqEsmkp0Sc96MLwXGUH_GbSU2l5bRZtXZqPXfQ");
   const hoja = ss.getSheetByName("ResumenMes");
   const datos = hoja.getDataRange().getValues();
@@ -518,7 +518,7 @@ function tablaTextoMes1() {
   return txt;
 }
 
-function tablaTextoMes2() {
+function tablaTextoMes2_C6_ejecutivo() {
   const ss = SpreadsheetApp.openById("1BpcNCdqEsmkp0Sc96MLwXGUH_GbSU2l5bRZtXZqPXfQ");
   const hoja = ss.getSheetByName("ResumenMes");
   const datos = hoja.getDataRange().getValues();
