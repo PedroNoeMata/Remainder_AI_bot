@@ -249,9 +249,15 @@ function obtenerTokenTelegram_() {
   return obtenerPropiedadTelegram_("TELEGRAM_TOKEN");
 }
 
+/**
+ * Envía un mensaje HTML a Telegram.
+ * Reintenta errores transitorios de red, HTTP 429 y errores 5xx.
+ * Nunca incluye el token ni la URL autenticada en los mensajes de error.
+ */
 function enviarTelegramHTML(mensaje, chatId) {
   const token = obtenerTokenTelegram_();
   const url = `https://api.telegram.org/bot${token}/sendMessage`;
+  const maxIntentos = 3;
 
   const opciones = {
     method: "post",
@@ -259,8 +265,60 @@ function enviarTelegramHTML(mensaje, chatId) {
       chat_id: String(chatId),
       text: mensaje,
       parse_mode: "HTML"
-    }
+    },
+    muteHttpExceptions: true
   };
 
-  UrlFetchApp.fetch(url, opciones);
+  let ultimoError = null;
+
+  for (let intento = 1; intento <= maxIntentos; intento++) {
+    try {
+      const respuesta = UrlFetchApp.fetch(url, opciones);
+      const codigo = respuesta.getResponseCode();
+      const cuerpo = respuesta.getContentText();
+
+      let resultado;
+      try {
+        resultado = JSON.parse(cuerpo);
+      } catch (errorParseo) {
+        resultado = null;
+      }
+
+      if (codigo >= 200 && codigo < 300 && resultado && resultado.ok === true) {
+        return resultado;
+      }
+
+      const descripcion = resultado && resultado.description
+        ? resultado.description
+        : "Respuesta no válida del servicio de Telegram";
+
+      const esTransitorio = codigo === 429 || codigo >= 500;
+
+      if (!esTransitorio || intento === maxIntentos) {
+        throw new Error(
+          "Telegram rechazó el envío. HTTP " + codigo + ": " + descripcion
+        );
+      }
+
+      ultimoError = new Error("Telegram respondió HTTP " + codigo);
+    } catch (error) {
+      ultimoError = error;
+
+      // Los errores HTTP definitivos no se deben reintentar.
+      if (/Telegram rechazó el envío/.test(String(error)) ||
+          intento === maxIntentos) {
+        throw new Error(
+          "No se pudo enviar el mensaje a Telegram después de " +
+          intento + " intento(s): " + String(error.message || error)
+        );
+      }
+    }
+
+    Utilities.sleep(1000 * Math.pow(2, intento - 1));
+  }
+
+  throw new Error(
+    "No se pudo enviar el mensaje a Telegram: " +
+    String(ultimoError && (ultimoError.message || ultimoError) || "error desconocido")
+  );
 }
