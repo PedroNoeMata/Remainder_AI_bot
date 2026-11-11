@@ -1,5 +1,5 @@
 function enviarTelegramHTML_1(mensaje, chatId) {
-  const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
+  const url = `https://api.telegram.org/bot${obtenerTokenTelegram_()}/sendMessage`;
 
   const opciones = {
     method: "post",
