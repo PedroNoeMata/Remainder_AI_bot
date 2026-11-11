@@ -1,7 +1,5 @@
 function enviarRecordatorioTelegram_1() {
-  var token = "7947319144:AAE_RsZXslz5e8Z32DrZAJvdKPmTFJfa4FQ";
-  var chat_id = "1318922238";
-  var urlSheet = "https://docs.google.com/spreadsheets/d/1BpcNCdqEsmkp0Sc96MLwXGUH_GbSU2l5bRZtXZqPXfQ/edit#gid=1445570305";
+  var urlSheet = URL_SHEET;
 
   var ss = SpreadsheetApp.openByUrl(urlSheet);
   resumenVentasPorMes();
@@ -23,6 +21,8 @@ function enviarRecordatorioTelegram_1() {
     textoMes +
     "```";
 
+  var token = obtenerTokenTelegram_();
+  var chat_id = obtenerChatIdTelegram_();
   var url = "https://api.telegram.org/bot" + token + "/sendMessage";
 
   UrlFetchApp.fetch(url, {
