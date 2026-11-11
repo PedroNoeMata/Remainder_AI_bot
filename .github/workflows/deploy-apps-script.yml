@@ -1,6 +1,9 @@
 name: Deploy Google Apps Script with clasp
 
 on:
+  push:
+    branches:
+      - fix/seguridad-telegram
   workflow_dispatch:
     inputs:
       confirm_deploy:
@@ -24,15 +27,18 @@ jobs:
     name: Validate and deploy with clasp
     runs-on: ubuntu-latest
     steps:
-      - name: Require explicit confirmation
+      - name: Validate trigger and deployment branch
         shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          CONFIRM_DEPLOY: ${{ inputs.confirm_deploy }}
         run: |
-          if [ "${{ inputs.confirm_deploy }}" != "yes" ]; then
-            echo "::error::Despliegue cancelado. Ejecuta nuevamente y selecciona yes para confirmar."
+          if [[ "$EVENT_NAME" == "workflow_dispatch" && "$CONFIRM_DEPLOY" != "yes" ]]; then
+            echo "::error::Despliegue cancelado. Selecciona yes para confirmar."
             exit 1
           fi
 
-          if [ "${GITHUB_REF}" != "refs/heads/fix/seguridad-telegram" ]; then
+          if [ "$GITHUB_REF" != "refs/heads/fix/seguridad-telegram" ]; then
             echo "::error::Por seguridad, este workflow solo despliega desde fix/seguridad-telegram."
             exit 1
           fi
