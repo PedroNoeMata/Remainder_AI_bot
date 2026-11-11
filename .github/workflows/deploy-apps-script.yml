@@ -1,0 +1,72 @@
+name: Deploy Google Apps Script with clasp
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_deploy:
+        description: "Confirmar que deseas sobrescribir el código del proyecto de Apps Script"
+        required: true
+        type: choice
+        options:
+          - "no"
+          - "yes"
+        default: "no"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: clasp-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Validate and deploy with clasp
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require explicit confirmation
+        shell: bash
+        run: |
+          if [ "${{ inputs.confirm_deploy }}" != "yes" ]; then
+            echo "::error::Despliegue cancelado. Ejecuta nuevamente y selecciona yes para confirmar."
+            exit 1
+          fi
+
+          if [ "${GITHUB_REF}" != "refs/heads/fix/seguridad-telegram" ]; then
+            echo "::error::Por seguridad, este workflow solo despliega desde fix/seguridad-telegram."
+            exit 1
+          fi
+
+      - name: Checkout deployment branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/seguridad-telegram
+
+      - name: Configure Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Validate Apps Script manifest
+        run: |
+          node -e "JSON.parse(require('fs').readFileSync('appsscript.json', 'utf8')); console.log('appsscript.json válido')"
+
+      - name: Install clasp
+        run: npm install --global @google/clasp
+
+      - name: Configure clasp authentication
+        env:
+          CLASPRC_JSON: ${{ secrets.CLASPRC_JSON }}
+        run: |
+          if [ -z "$CLASPRC_JSON" ]; then
+            echo "::error::Falta el secreto CLASPRC_JSON en GitHub."
+            exit 1
+          fi
+          printf '%s' "$CLASPRC_JSON" > "$HOME/.clasprc.json"
+          chmod 600 "$HOME/.clasprc.json"
+
+      - name: Check Apps Script target
+        run: clasp status
+
+      - name: Push source to Apps Script
+        run: clasp push --force
