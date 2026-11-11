@@ -18,8 +18,8 @@ function enviarRecordatorioTelegramMonto() {
     // Ejecuta resúmenes por agente
     // const ventasMes = resumenVentasPorMes(agente);
     // actualizarResumenMesActual()
-    const htmlDia = tablaTextoCanalMonto();
-    const htmlMes = tablaTextoMesMonto();
+    const htmlDia = tablaTextoCanalMontox();
+    const htmlMes = tablaTextoMesMontox();
 
     // Mensaje final
     const mensaje = `
