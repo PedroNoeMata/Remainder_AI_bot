@@ -1,5 +1,3 @@
-const TELEGRAM_TOKEN = "7947319144:AAE_RsZXslz5e8Z32DrZAJvdKPmTFJfa4FQ";
-const CHAT_ID = "1318922238";
 const URL_SHEET = "https://docs.google.com/spreadsheets/d/1BpcNCdqEsmkp0Sc96MLwXGUH_GbSU2l5bRZtXZqPXfQ/edit#gid=1445570305";
 const HOJA_DIA = "ResumenDiaMesActual";
 const HOJA_MES = "ResumenMes";
@@ -192,8 +190,23 @@ function formatoNumero(valor) {
   return num.toLocaleString("en-US");  // 1,234,567
 }
 
+function obtenerPropiedadTelegram_(clave) {
+  const valor = PropertiesService.getScriptProperties().getProperty(clave);
+  if (!valor) throw new Error(`Falta configurar la propiedad de Script Properties: ${clave}`);
+  return valor.trim();
+}
+
+function obtenerTokenTelegram_() {
+  return obtenerPropiedadTelegram_("TELEGRAM_TOKEN");
+}
+
+function obtenerChatIdTelegram_() {
+  return obtenerPropiedadTelegram_("TELEGRAM_CHAT_ID");
+}
+
 function enviarTelegramHTML(mensaje, chatId) {
-  const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
+  const token = obtenerTokenTelegram_();
+  const url = `https://api.telegram.org/bot${token}/sendMessage`;
 
   const opciones = {
     method: "post",
@@ -208,7 +221,8 @@ function enviarTelegramHTML(mensaje, chatId) {
 }
 
 function enviarTelegramHTML1(mensaje, chatId) {
-  const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
+  const token = obtenerTokenTelegram_();
+  const url = `https://api.telegram.org/bot${token}/sendMessage`;
 
   // Lista de chat_id (usuarios, grupos o canales)
   const CHAT_IDS = chatId;
