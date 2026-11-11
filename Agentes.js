@@ -18,7 +18,7 @@ function enviarRecordatorioTelegramAg() {
     // Ejecuta resúmenes por agente
     // const ventasDia = resumenVentasPorDiaMesActual(agente);
     const ventasMes = resumenVentasPorMes_A(agente);
-    const htmlMes = tablaTextoMes();
+    const htmlMes = tablaTextoMes_A(agente);
 
     // Mensaje final
     const mensaje = `
@@ -155,38 +155,38 @@ function resumenVentasPorMes_A(agenteFiltro) {
     .setNumberFormat("0.00%");
 
   Logger.log(`✔ Resumen mensual generado para ${agenteFiltro}`);
+  return salida;
 }
 
 function tablaTextoMes_A(nombreAgente) {
-  const ss = SpreadsheetApp.openById("1BpcNCdqEsmkp0Sc96MLwXGUH_GbSU2l5bRZtXZqPXfQ");
+  const ss = SpreadsheetApp.openById(ID);
   const hoja = ss.getSheetByName("ResumenMes");
-  const datos = hoja.getDataRange().getValues();
+  if (!hoja) throw new Error("No existe la hoja 'ResumenMes'");
 
-  let txt = `<b>📊 Resumen por Cliente – ${nombreAgente}</b>\n\n`;
+  const datos = hoja.getDataRange().getValues();
+  if (datos.length < 2) {
+    return "<b>📊 Resumen mensual – " + nombreAgente + "</b>\\nSin ventas para el periodo.";
+  }
+
+  let txt = "<b>📊 Resumen mensual – " + nombreAgente + "</b>\\n\\n";
   txt += "<pre>";
-  txt += "Cliente              | PPTO      | Ventas    | %\n";
-  txt += "---------------------|-----------|-----------|----\n";
+  txt += "Mes      | Ventas       | PPTO         | Cumplimiento\\n";
+  txt += "---------|--------------|--------------|-------------\\n";
 
   for (let i = 1; i < datos.length; i++) {
-    const agente = datos[i][2]; // C
-
-    if (agente !== nombreAgente) continue;
-
-    const cliente = String(datos[i][0]).padEnd(20, " ");
-    const ppto    = formatoNumero(datos[i][3]).padStart(9, " ");
-    const ventas  = formatoNumero(datos[i][4]).padStart(9, " ");
-    const porc    = formatoPorcentajeTelegram(datos[i][5]).padStart(4, " ");
-
-    txt += `${cliente}| ${ppto} | ${ventas} | ${porc}\n`;
+    const mes = String(datos[i][0] || "");
+    const venta = formatoNumero(datos[i][1]).padStart(12, " ");
+    const ppto = formatoNumero(datos[i][2]).padStart(12, " ");
+    const porcentaje = formatoPorcentajeTelegram(datos[i][3]).padStart(11, " ");
+    txt += mes.padEnd(8, " ") + " | " + venta + " | " + ppto + " | " + porcentaje + "\\n";
   }
 
   txt += "</pre>";
-
   return txt;
 }
 
 function enviarTelegramHTML_A(mensaje, chatId,agente) {
-  const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
+  const url = `https://api.telegram.org/bot${obtenerTokenTelegram_()}/sendMessage`;
   crearCopiarYFiltrarPorM(agente);
   const xx = crearLibroSiNoExiste(agente);
 
