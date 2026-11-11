@@ -30,7 +30,7 @@ function resumenVentasPorDiaMesActual(agenteFiltro) {
   for (let i = 1; i < data.length; i++) {
 
     const agente = data[i][idxAgente];
-    if (!esDibe && agente !== agenteFiltro) continue;
+    if (agenteFiltro && !esDibe && agente !== agenteFiltro) continue;
 
     const fechaTxt = data[i][idxFecha]; // yyyy-mm-dd
     const venta = Number(data[i][idxVenta].replace(/,/g, ""));
@@ -65,6 +65,8 @@ function resumenVentasPorDiaMesActual(agenteFiltro) {
     hojaResumen.getRange(2, 1, resumenOrdenado.length, 1)
       .setNumberFormat("@");
   }
+
+  return resumenOrdenado;
 }
 
 function probarResumenesPorAgente() {
