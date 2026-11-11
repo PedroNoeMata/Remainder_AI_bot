@@ -68,9 +68,9 @@ function tablaTextoMesCajas() {
     Math.max(h.length, ...filas.map(f => String(f[i]).length))
   );
 
-  let txt = "<b>📈 Resumen Mensual</b>\\n\\n<pre>";
-  txt += headers.map((h, i) => h.padEnd(widths[i])).join(" | ") + "\\n";
-  txt += widths.map(w => "-".repeat(w)).join("-|-") + "\\n";
+  let txt = "<b>📈 Resumen Mensual</b>\n\n<pre>";
+  txt += headers.map((h, i) => h.padEnd(widths[i])).join(" | ") + "\n";
+  txt += widths.map(w => "-".repeat(w)).join("-|-") + "\n";
 
   filas.forEach(f => {
     txt += [
@@ -78,7 +78,7 @@ function tablaTextoMesCajas() {
       f[1].padStart(widths[1]),
       f[2].padStart(widths[2]),
       f[3].padStart(widths[3])
-    ].join(" | ") + "\\n";
+    ].join(" | ") + "\n";
   });
 
   return txt + "</pre>";
@@ -106,9 +106,9 @@ function tablaTextoMesMonto() {
     Math.max(h.length, ...filas.map(f => String(f[i]).length))
   );
 
-  let txt = "<b>📈 Resumen Mensual</b>\\n\\n<pre>";
-  txt += headers.map((h, i) => h.padEnd(colWidths[i])).join(" | ") + "\\n";
-  txt += colWidths.map(w => "-".repeat(w)).join("-|-") + "\\n";
+  let txt = "<b>📈 Resumen Mensual</b>\n\n<pre>";
+  txt += headers.map((h, i) => h.padEnd(colWidths[i])).join(" | ") + "\n";
+  txt += colWidths.map(w => "-".repeat(w)).join("-|-") + "\n";
 
   filas.forEach(f => {
     txt += [
@@ -116,7 +116,7 @@ function tablaTextoMesMonto() {
       f[1].padStart(colWidths[1]),
       f[2].padStart(colWidths[2]),
       f[3].padStart(colWidths[3])
-    ].join(" | ") + "\\n";
+    ].join(" | ") + "\n";
   });
 
   return txt + "</pre>";
@@ -135,16 +135,16 @@ function tablaTextoCanalCajas() {
     if (largo > anchoCanal) anchoCanal = largo;
   }
 
-  let txt = "<b>📊 Resumen por Canal</b>\\n\\n<pre>";
-  txt += "Canal".padEnd(anchoCanal) + " | PPTO Vol | Ventas Vol | % VS PPTO\\n";
-  txt += "-".repeat(anchoCanal) + "-|----------|------------|-----------\\n";
+  let txt = "<b>📊 Resumen por Canal</b>\n\n<pre>";
+  txt += "Canal".padEnd(anchoCanal) + " | PPTO Vol | Ventas Vol | % VS PPTO\n";
+  txt += "-".repeat(anchoCanal) + "-|----------|------------|-----------\n";
 
   for (let i = 1; i < datos.length; i++) {
     const canal = String(datos[i][0]).padEnd(anchoCanal);
     const ppto = formatoNumero(datos[i][2]).padStart(9);
     const venta = formatoNumero(datos[i][3]).padStart(9);
     const porc = ((datos[i][4] * 100).toFixed(0) + "%").padStart(8);
-    txt += `${canal} | ${ppto} | ${venta} | ${porc}\\n`;
+    txt += `${canal} | ${ppto} | ${venta} | ${porc}\n`;
   }
 
   return txt + "</pre>";
@@ -172,9 +172,9 @@ function tablaTextoCanalMonto() {
     Math.max(h.length, ...filas.map(f => String(f[i]).length))
   );
 
-  let txt = "<b>📊 Resumen por Canal</b>\\n\\n<pre>";
-  txt += headers.map((h, i) => h.padEnd(widths[i])).join(" | ") + "\\n";
-  txt += widths.map(w => "-".repeat(w)).join("-|-") + "\\n";
+  let txt = "<b>📊 Resumen por Canal</b>\n\n<pre>";
+  txt += headers.map((h, i) => h.padEnd(widths[i])).join(" | ") + "\n";
+  txt += widths.map(w => "-".repeat(w)).join("-|-") + "\n";
 
   filas.forEach(f => {
     txt += [
@@ -182,7 +182,7 @@ function tablaTextoCanalMonto() {
       f[1].padStart(widths[1]),
       f[2].padStart(widths[2]),
       f[3].padStart(widths[3])
-    ].join(" | ") + "\\n";
+    ].join(" | ") + "\n";
   });
 
   return txt + "</pre>";
