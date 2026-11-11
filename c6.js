@@ -339,7 +339,7 @@ function resumenVentasPorMes(agenteFiltro) {
 }
 
 function enviarTelegramHTML(mensaje, chatId) {
-  const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
+  const url = `https://api.telegram.org/bot${obtenerTokenTelegram_()}/sendMessage`;
 
   const payload = {
     chat_id: String(chatId),
